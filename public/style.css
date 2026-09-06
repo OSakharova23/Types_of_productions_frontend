@@ -1,0 +1,310 @@
+:root {
+  --hf-bg: #f9f9f8;
+  --hf-card-bg: #ffffff;
+  --hf-text: #1a1a1a;
+  --hf-muted: #666666;
+  --hf-accent: #8b3a2b;
+  --hf-border: #e8e8e5;
+  /* Заданный градиент календаря Homo Faber: сверху вниз от #baced8 до #e9edf0 */
+  --hf-cal-gradient: linear-gradient(180deg, #baced8 0%, #e9edf0 100%);
+  --hf-tab-border: #9bb3c2;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #121212;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Фиксированный компактный размер экрана 360x640 */
+.mobile-viewport {
+  width: 360px;
+  height: 640px;
+  background-color: var(--hf-bg);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  border-radius: 12px;
+}
+
+/* Отключение скролла */
+.content-area {
+  flex: 1;
+  overflow-y: hidden;
+  position: relative;
+}
+
+/* ============================================
+   НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (ТАББАР С ГОЛУБЫМ ГРАДИЕНТОМ)
+   ============================================ */
+.tabbar {
+  height: 52px;
+  min-height: 52px;
+  background: var(--hf-cal-gradient);
+  border-top: 1px solid var(--hf-tab-border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 20;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.tab-item {
+  text-decoration: none;
+  color: #717d82;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  transition: color 0.2s, transform 0.1s;
+}
+
+.tab-item:hover {
+  color: #99a7ae;
+}
+
+/* ============================================
+   ЛЕНТА (FEED)
+   ============================================ */
+.feed-screen {
+  height: 100%;
+  position: relative;
+  background: #000;
+}
+
+.feed-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 14px 16px 14px;
+  color: #fff;
+}
+
+/* Лайк - справа, поднят выше */
+.feed-actions {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+  margin-right: 1px;
+  margin-top: -50px;
+}
+
+.feed-like-clean {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* Нижний блок с информацией и кнопкой */
+.feed-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.feed-info {
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.feed-info p {
+  margin-bottom: 2px;
+}
+
+.feed-next-btn {
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.feed-btn {
+  background: rgba(255,255,255,0.25);
+  border: 1px solid rgba(255,255,255,0.5);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
+  display: inline-block;
+}
+
+.feed-btn:hover {
+  background: var(--hf-accent);
+  border-color: var(--hf-accent);
+}
+
+/* ============================================
+   ЭКРАН ДОБАВЛЕНИЯ (ADD)
+   ============================================ */
+.add-container {
+  padding: 10px 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-container h3 {
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: var(--hf-text);
+  font-weight: 700;
+}
+
+.media-preview-box {
+  background: #fff;
+  border: 1px solid var(--hf-border);
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.media-preview-box img,
+.media-preview-box video {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 3px;
+  background: #f0f0f0;
+}
+
+.form-group {
+  margin-bottom: 5px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 9px;
+  color: var(--hf-muted);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.form-group input {
+  width: 100%;
+  height: 26px;
+  padding: 2px 8px;
+  border: 1px solid var(--hf-border);
+  border-radius: 4px;
+  font-size: 11px;
+  background: #fff;
+}
+
+/* ============================================
+   ПЛИТКА (TILE) - БЕЛЫЙ ХЕДЕР
+   ============================================ */
+.filter-form {
+  padding: 8px 10px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--hf-border);
+  display: flex;
+  gap: 6px;
+}
+
+.filter-form input {
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--hf-border);
+  border-radius: 4px;
+  font-size: 11px;
+  background: #fff;
+}
+
+.filter-form input:focus {
+  outline: none;
+  border-color: var(--hf-accent);
+}
+
+.filter-form button {
+  padding: 5px 12px;
+  background: var(--hf-text);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.filter-form button:hover {
+  background: var(--hf-accent);
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+}
+
+.card {
+  background: var(--hf-card-bg);
+  border: 1px solid var(--hf-border);
+  text-decoration: none;
+  color: var(--hf-text);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s;
+}
+
+.card:hover {
+  border-color: var(--hf-accent);
+}
+
+.card-image {
+  width: 100%;
+  height: 98px;
+  object-fit: cover;
+}
+
+.card-info {
+  padding: 6px 8px;
+  font-size: 10px;
+}
+
+.card-title {
+  font-weight: bold;
+  margin-bottom: 2px;
+  font-size: 11px;
+}

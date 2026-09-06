@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="mobile-viewport">
+    <div class="content-area">
+      <div class="add-container">
+        <h3>{{title}}</h3>
+
+        <div class="media-preview-box">
+          <img src="http://localhost:9000/types-of-productions-media/{{draft.image_key}}" alt="Превью производства">
+          <video src="http://localhost:9000/types-of-productions-media/{{draft.video_key}}" controls></video>
+        </div>
+
+        <form>
+          <div class="form-group">
+            <label>Тип производства</label>
+            <input type="text" value="{{draft.craft_title}}">
+          </div>
+          <div class="form-group">
+            <label>Норма выхода продукции (шт)</label>
+            <input type="number" value="{{draft.production_output_rate}}">
+          </div>
+          <div class="form-group">
+            <label>Количество отходов/брака (кг)</label>
+            <input type="number" value="{{draft.defect_waste_quantity}}">
+          </div>
+          <div class="form-group">
+            <label>Датировка мастерской (век)</label>
+            <input type="number" value="{{draft.dating_century}}">
+          </div>
+          <div class="form-group">
+            <label>Производственный цикл (часы)</label>
+            <input type="number" value="{{draft.technological_cycle_hours}}">
+          </div>
+        </form>
+      </div>
+    </div>
+    {{> types_of_productions_tabbar}}
+  </div>
+</body>
+</html>

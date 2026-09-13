@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { TypesOfProductionsModule } from './types_of_productions/types_of_productions.module.js';
+import { ProductionTypesModule } from './production_types/production_types.module.js';
 
 @Module({
-  imports: [TypesOfProductionsModule],
+  imports: [ProductionTypesModule],
 })
 export class AppModule {}

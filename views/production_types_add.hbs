@@ -12,14 +12,29 @@
         <h3>{{title}}</h3>
 
         <div class="media-preview-box">
-          <img src="http://localhost:9000/types-of-productions-media/{{draft.image_key}}" alt="Превью производства">
-          <video src="http://localhost:9000/types-of-productions-media/{{draft.video_key}}" controls></video>
+          <img src="http://localhost:9000/production-types-media/{{draft.image_key}}" alt="Превью производства">
+
+          <label class="file-picker">
+            <span class="file-picker-label">ВЫБРАТЬ ИЗОБРАЖЕНИЕ</span>
+            <input type="file" accept="image/*" class="file-picker-input">
+          </label>
+
+          <video src="http://localhost:9000/production-types-media/{{draft.video_key}}" controls></video>
+
+          <label class="file-picker">
+            <span class="file-picker-label">ВЫБРАТЬ ВИДЕО</span>
+            <input type="file" accept="video/*" class="file-picker-input">
+          </label>
         </div>
 
         <form>
           <div class="form-group">
             <label>Тип производства</label>
             <input type="text" value="{{draft.craft_title}}">
+          </div>
+          <div class="form-group">
+            <label>Описание</label>
+            <textarea rows="4">{{draft.description}}</textarea>
           </div>
           <div class="form-group">
             <label>Норма выхода продукции (шт)</label>
@@ -29,18 +44,10 @@
             <label>Количество отходов/брака (кг)</label>
             <input type="number" value="{{draft.defect_waste_quantity}}">
           </div>
-          <div class="form-group">
-            <label>Датировка мастерской (век)</label>
-            <input type="number" value="{{draft.dating_century}}">
-          </div>
-          <div class="form-group">
-            <label>Производственный цикл (часы)</label>
-            <input type="number" value="{{draft.technological_cycle_hours}}">
-          </div>
         </form>
       </div>
     </div>
-    {{> types_of_productions_tabbar}}
+    {{> production_types_tabbar}}
   </div>
 </body>
 </html>

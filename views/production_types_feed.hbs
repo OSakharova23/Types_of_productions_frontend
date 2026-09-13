@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="mobile-viewport">
+    <div class="content-area feed-screen">
+      <video class="feed-video" autoplay loop muted playsinline>
+        <source src="http://localhost:9000/production-types-media/{{item.video_key}}" type="video/mp4">
+      </video>
+
+      <div class="feed-overlay">
+        <!-- Верх: заголовок -->
+        <div class="feed-top">
+          <h2 class="feed-title">{{item.craft_title}}</h2>
+        </div>
+
+        <!-- Лайк + Следующий + параметры — на 100px ниже названия, справа -->
+        <div class="feed-right">
+          <div class="feed-like-clean">
+            <span class="feed-like-icon">❤</span>
+            <span class="feed-like-count">{{likes_count}}</span>
+          </div>
+
+          <a href="/production_types/feed/{{item.production_id}}?next=true" class="feed-btn">➔</a>
+
+          <div class="feed-params">
+            <p>Норма выхода: <strong>{{item.production_output_rate}} шт</strong></p>
+            <p>Брак и отходы: <strong>{{item.defect_waste_quantity}} кг</strong></p>
+          </div>
+        </div>
+
+        <!-- Описание внизу: 2 строки + «Ещё» в конце 2-й строки -->
+        <div class="feed-info">
+          <input type="checkbox" id="feed-expand" class="feed-expand-checkbox" hidden>
+
+          <p class="feed-desc">{{item.description}}</p>
+
+          <label for="feed-expand" class="feed-more-label">
+            <span class="feed-more-open">Ещё</span>
+            <span class="feed-more-close">Свернуть</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    {{> production_types_tabbar}}
+  </div>
+</body>
+</html>

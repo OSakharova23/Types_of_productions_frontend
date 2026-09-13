@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="mobile-viewport">
+    <div class="content-area">
+      <form action="/production_types" method="GET" class="filter-form">
+        <div class="filter-slider-box">
+          <div class="filter-slider-header">
+            <span class="filter-slider-label">Мин. норма выхода:</span>
+            <span class="filter-slider-value">
+              {{#if search_rate}}{{search_rate}} шт{{else}}все{{/if}}
+            </span>
+          </div>
+
+          <input
+            type="range"
+            name="production_output_rate"
+            min="0"
+            max="200"
+            step="5"
+            value="{{#if search_rate}}{{search_rate}}{{else}}0{{/if}}"
+            class="filter-slider"
+          >
+
+          <!-- Риски: 41 шт (шаг 5). Каждая 4-я — длинная (совпадает с подписью) -->
+          <div class="filter-slider-ticks" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span>
+          </div>
+
+          <!-- Подписи: 0, 20, 40, ..., 200 — 11 шт -->
+          <div class="filter-slider-scale">
+            <span>0</span>
+            <span>20</span>
+            <span>40</span>
+            <span>60</span>
+            <span>80</span>
+            <span>100</span>
+            <span>120</span>
+            <span>140</span>
+            <span>160</span>
+            <span>180</span>
+            <span>200</span>
+          </div>
+        </div>
+        <button type="submit">НАЙТИ</button>
+      </form>
+
+      <div class="tile-grid">
+        {{#each productions}}
+        <a href="/production_types/feed/{{this.production_id}}" class="card">
+          <img src="http://localhost:9000/production-types-media/{{this.image_key}}" alt="{{this.craft_title}}" class="card-image">
+          <div class="card-info">
+            <p class="card-title">{{this.craft_title}}</p>
+            <p>Норма: {{this.production_output_rate}} шт</p>
+            <p style="color: #1A1A1A; font-size: 10px;">
+                <span style="color: #d62542;">❤</span> {{this.likes_count}}
+            </p>
+          </div>
+        </a>
+        {{/each}}
+      </div>
+    </div>
+    {{> production_types_tabbar}}
+  </div>
+</body>
+</html>

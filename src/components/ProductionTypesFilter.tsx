@@ -1,4 +1,4 @@
-import { type FC, type FormEvent } from 'react';
+import { type FC, type SyntheticEvent } from 'react';
 import { Button } from 'react-bootstrap';
 
 interface IFilterProps {
@@ -6,7 +6,7 @@ interface IFilterProps {
   maxRate: number;
   setMinRate: (val: number) => void;
   setMaxRate: (val: number) => void;
-  onSearch: (e: FormEvent) => void;
+  onSearch: (e: SyntheticEvent) => void;
 }
 
 export const ProductionTypesFilter: FC<IFilterProps> = ({

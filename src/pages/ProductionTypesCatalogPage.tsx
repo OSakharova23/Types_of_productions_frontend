@@ -1,4 +1,4 @@
-import { type FC, type SyntheticEvent, useState } from 'react';
+import { type FC, type SubmitEvent, useState } from 'react';
 import { PRODUCTION_TYPES_MOCK, type IProductionType } from '../modules/production_types_mock';
 import { ProductionTypesCard } from '../components/ProductionTypesCard';
 import { ProductionTypesFilter } from '../components/ProductionTypesFilter';
@@ -11,7 +11,7 @@ export const ProductionTypesCatalogPage: FC = () => {
     PRODUCTION_TYPES_MOCK.filter(item => item.status === 'published')
   );
 
-  const handleSearch = (e: SyntheticEvent) => {
+  const handleSearch = (e: SubmitEvent) => {
     e.preventDefault();
     
     let currentMin = minRate;

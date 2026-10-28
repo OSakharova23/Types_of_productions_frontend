@@ -37,7 +37,7 @@ export const PRODUCTION_TYPES_MOCK: IProductionType[] = [
     image_url: null,
     video_url: null,
     likes_count: 2,
-    is_creator: 1,
+    is_creator: 0,
     is_liked: 0,
     status: 'published',
   },

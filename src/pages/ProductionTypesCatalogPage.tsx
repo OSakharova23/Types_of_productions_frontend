@@ -1,35 +1,22 @@
-import { type FC, type SubmitEvent, useState } from 'react';
-import { PRODUCTION_TYPES_MOCK, type IProductionType } from '../modules/production_types_mock';
+import { type FC, type SubmitEvent, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState, AppDispatch } from '../store';
+import { setFilters, fetchProductionTypes } from '../store/slices/productionTypesSlice';
 import { ProductionTypesCard } from '../components/ProductionTypesCard';
 import { ProductionTypesFilter } from '../components/ProductionTypesFilter';
+import { Spinner } from 'react-bootstrap';
 
 export const ProductionTypesCatalogPage: FC = () => {
-  const [minRate, setMinRate] = useState<number>(0);
-  const [maxRate, setMaxRate] = useState<number>(200);
+  const dispatch = useDispatch<AppDispatch>();
+  const { minRate, maxRate, items, loading } = useSelector((state: RootState) => state.productionTypes);
 
-  const [production_types_list, setProductionTypesList] = useState<IProductionType[]>(
-    PRODUCTION_TYPES_MOCK.filter(item => item.status === 'published')
-  );
+  useEffect(() => {
+    dispatch(fetchProductionTypes());
+  }, [dispatch]);
 
   const handleSearch = (e: SubmitEvent) => {
     e.preventDefault();
-    
-    let currentMin = minRate;
-    let currentMax = maxRate;
-    if (currentMin > currentMax) {
-      currentMin = maxRate;
-      currentMax = minRate;
-      setMinRate(currentMin);
-      setMaxRate(currentMax);
-    }
-
-    const filteredList = PRODUCTION_TYPES_MOCK.filter(item => {
-      if (item.status !== 'published') return false;
-
-      const rate = item.production_output_rate || 0;
-      return rate >= currentMin && rate <= currentMax;
-    });
-    setProductionTypesList(filteredList);
+    dispatch(fetchProductionTypes());
   };
 
   return (
@@ -37,16 +24,20 @@ export const ProductionTypesCatalogPage: FC = () => {
       <ProductionTypesFilter
         minRate={minRate}
         maxRate={maxRate}
-        setMinRate={setMinRate}
-        setMaxRate={setMaxRate}
-        onSearch={handleSearch}
+        setMinRate={(val) => dispatch(setFilters({ minRate: val, maxRate }))}
+        setMaxRate={(val) => dispatch(setFilters({ minRate, maxRate: val }))}
+        onSearch={handleSearch as any}
       />
-
-      <div className="tile-grid">
-        {production_types_list.map((item) => (
-          <ProductionTypesCard key={item.production_id} item={item} />
-        ))}
-      </div>
+      
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}><Spinner animation="border" /></div>
+      ) : (
+        <div className="tile-grid">
+          {items.map((item: any) => (
+            <ProductionTypesCard key={item.production_id} item={item} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -15,7 +15,7 @@ export const ProductionTypesCard: FC<ICardProps> = ({ item }) => {
   const isAuth = useSelector((state: RootState) => state.user.isAuth);
   const defaultImage = '/img/default-image.jpg';
 
-  const handleClick = () => navigate(`/feed/${item.production_id}`);
+  const handleClick = () => navigate(`/production_types/feed/${item.production_id}`);
 
   const handleLike = (e: React.MouseEvent) => {
     e.stopPropagation();

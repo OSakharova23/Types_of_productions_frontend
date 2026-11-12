@@ -18,19 +18,19 @@ export const ProductionTypesTabBar: FC = () => {
       } catch (e) {}
       dispatch(setAuth(0));
       dispatch(resetFilters());
-      navigate('/login');
+      navigate('/users/login');
     } else {
-      navigate('/login');
+      navigate('/users/login');
     }
   };
 
   const handleAddClick = () => {
-    if (isAuth === 1) navigate('/add');
+    if (isAuth === 1) navigate('/production_types/add');
   };
 
   return (
     <nav className="tabbar">
-      <button type="button" className="tab-item" onClick={() => navigate('/feed')}>Лента</button>
+      <button type="button" className="tab-item" onClick={() => navigate('/production_types/feed')}>Лента</button>
       <button 
         type="button" 
         className="tab-item" 
@@ -39,7 +39,7 @@ export const ProductionTypesTabBar: FC = () => {
       >
         Добавление
       </button>
-      <button type="button" className="tab-item" onClick={() => navigate('/')}>Плитка</button>
+      <button type="button" className="tab-item" onClick={() => navigate('/production_types')}>Плитка</button>
       <button type="button" className="tab-item" onClick={handleAuthClick}>
         {isAuth === 1 ? 'ВЫХОД' : 'ВХОД'}
       </button>

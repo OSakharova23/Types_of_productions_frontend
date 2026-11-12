@@ -129,7 +129,7 @@ export const ProductionTypesAddPage: FC = () => {
 
         await api.api.productionTypesControllerPublishService(draftId, payload);
         dispatch(fetchProductionTypes());
-        navigate('/');
+        navigate('/production_types');
       } catch (error) {
         console.error(error);
         alert("Ошибка при публикации.");

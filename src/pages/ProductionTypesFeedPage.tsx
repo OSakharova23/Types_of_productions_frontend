@@ -34,7 +34,7 @@ export const ProductionTypesFeedPage: FC = () => {
     if (!currentItem) return;
     const currentIndex = items.findIndex((i: any) => i.production_id === currentItem.production_id);
     const nextItem = items[currentIndex + 1];
-    navigate(`/feed/${nextItem ? nextItem.production_id : items[0].production_id}`);
+    navigate(`/production_types/feed/${nextItem ? nextItem.production_id : items[0].production_id}`);
   };
 
   const handleLike = () => {

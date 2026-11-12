@@ -31,7 +31,7 @@ export const LoginPage: FC = () => {
     try {
       await loginManual(formData);
       dispatch(setAuth(1));
-      navigate('/');
+      navigate('/production_types');
     } catch (error) {
       setLoginError(true);
       setPasswordError(true);

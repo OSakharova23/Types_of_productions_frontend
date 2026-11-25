@@ -2,8 +2,8 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// Для GitHub Pages задайте VITE_BASE_PATH=/<ИмяРепозитория>/ при сборке pages;
-// для локального bundle по умолчанию './'
+// Для GitHub Pages при сборке передаётся VITE_BASE_PATH=/Types_of_productions_frontend/;
+// для локального запуска и прокси по умолчанию используется './'
 const base = process.env.VITE_BASE_PATH || './';
 
 export default defineConfig({
@@ -44,10 +44,8 @@ export default defineConfig({
     assetsInlineLimit: 0,
     rollupOptions: {
       output: {
-        inlineDynamicImports: false,
-        manualChunks: undefined,
+        codeSplitting: false,
         entryFileNames: 'assets/bundle.js',
-        chunkFileNames: 'assets/bundle.js',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name || '';
           if (name.endsWith('.css')) {

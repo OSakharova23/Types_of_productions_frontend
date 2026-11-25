@@ -13,11 +13,13 @@ export const App: FC = () => {
     <BrowserRouter basename={basename}>
       <Routes>
         <Route element={<AppLayout />}>
+          <Route index element={<ProductionTypesCatalogPage />} />
           <Route path="/production_types" element={<ProductionTypesCatalogPage />} />
           <Route path="/production_types/feed" element={<ProductionTypesFeedPage />} />
           <Route path="/production_types/feed/:id" element={<ProductionTypesFeedPage />} />
           <Route path="/production_types/add" element={<ProductionTypesAddPage />} />
           <Route path="/users/login" element={<LoginPage />} />
+          <Route path="*" element={<ProductionTypesCatalogPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

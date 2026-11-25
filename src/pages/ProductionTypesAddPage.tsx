@@ -147,27 +147,31 @@ export const ProductionTypesAddPage: FC = () => {
 
         <form className="add-form" onSubmit={step === 1 ? handleNext : handlePublish}>
           <div className="media-preview-box">
-            <img 
-              src={imagePreview} 
-              alt="Превью" 
-              className="media-preview-item"
-              onError={(e) => { e.currentTarget.src = '/img/default-image.jpg'; }}
-            />
-            <input 
-              id="image-upload" type="file" accept="image/*" onChange={handleImageChange} hidden 
-            />
-            <label htmlFor="image-upload" className="btn-base btn-file">ВЫБРАТЬ ИЗОБРАЖЕНИЕ</label>
+            <div className="media-slot">
+              <img 
+                src={imagePreview} 
+                alt="Превью" 
+                className="media-preview-item"
+                onError={(e) => { e.currentTarget.src = '/img/default-image.jpg'; }}
+              />
+              <input 
+                id="image-upload" type="file" accept="image/*" onChange={handleImageChange} hidden 
+              />
+              <label htmlFor="image-upload" className="btn-base btn-file">ВЫБРАТЬ ИЗОБРАЖЕНИЕ</label>
+            </div>
 
-            <video 
-              src={videoPreview} 
-              controls 
-              className="media-preview-item video-margin"
-              onError={(e) => { e.currentTarget.src = '/img/default-video.mp4'; }}
-            ></video>
-            <input 
-              id="video-upload" type="file" accept="video/*" onChange={handleVideoChange} hidden 
-            />
-            <label htmlFor="video-upload" className="btn-base btn-file">ВЫБРАТЬ ВИДЕО</label>
+            <div className="media-slot">
+              <video 
+                src={videoPreview} 
+                controls 
+                className="media-preview-item video-margin"
+                onError={(e) => { e.currentTarget.src = '/img/default-video.mp4'; }}
+              ></video>
+              <input 
+                id="video-upload" type="file" accept="video/*" onChange={handleVideoChange} hidden 
+              />
+              <label htmlFor="video-upload" className="btn-base btn-file">ВЫБРАТЬ ВИДЕО</label>
+            </div>
           </div>
 
           <div className="form-group">

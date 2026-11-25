@@ -7,6 +7,7 @@
   --hf-border: #e8e8e5;
   --hf-cal-gradient: linear-gradient(180deg, #baced8 0%, #e9edf0 100%);
   --hf-tab-border: #9bb3c2;
+  --card-min-width: 165px;
 }
 
 * {
@@ -15,42 +16,53 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
-  background-color: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
+  background-color: var(--hf-bg);
+}
+
+/* Единый полноэкранный контейнер для всех страниц */
 .mobile-viewport {
-  width: 360px;
-  height: 660px;
-  zoom: 1.2;
+  width: 100vw;
+  height: 100dvh;
+  max-width: 100%;
   background-color: var(--hf-bg);
   position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
-  border-radius: 12px;
 }
 
 .content-area {
-  flex: 1;
-  overflow-y: hidden;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
   position: relative;
-  min-height: 0; /* Гарантирует, что контент никогда не выдавит соседей (панель) за пределы экрана */
+  display: flex;
+  flex-direction: column;
 }
 
 .content-area--scroll {
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: thin;
 }
 
 /* ==================== НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ ==================== */
 .tabbar {
+  width: 100%;
   height: 52px;
   min-height: 52px;
   background: var(--hf-cal-gradient);
@@ -58,12 +70,9 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  
-  /* Делаем панель железобетонной */
-  position: relative; /* Без этого свойства z-index не работает */
+  position: relative;
   z-index: 20;
-  flex-shrink: 0; /* Запрещаем панели сжиматься при любых условиях */
-  
+  flex-shrink: 0;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
 }
 
@@ -77,21 +86,35 @@ body {
   text-transform: uppercase;
   transition: color 0.2s, transform 0.1s;
   cursor: pointer;
+  padding: 6px 10px;
 }
 
 .tab-item:hover {
-  color: #99a7ae;
+  color: #2c3e50;
 }
 
-/* ==================== ПЛИТКА (TILE) ==================== */
-/* Фильтр-слайдер */
+@media (min-width: 600px) {
+  .tabbar {
+    height: 58px;
+    min-height: 58px;
+  }
+
+  .tab-item {
+    font-size: 13px;
+    letter-spacing: 0.8px;
+  }
+}
+
+/* ==================== ПЛИТКА (TILE): 1–3 КОЛОНКИ ==================== */
 .filter-form {
-  padding: 10px 12px 8px 12px;
+  width: 100%;
+  padding: 10px 14px 8px 14px;
   background: #ffffff;
   border-bottom: 1px solid var(--hf-border);
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .filter-slider-box {
@@ -105,7 +128,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  font-size: 10px;
+  font-size: 10.5px;
   color: var(--hf-muted);
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -121,10 +144,9 @@ body {
 .filter-slider-value {
   color: var(--hf-accent);
   font-weight: 700;
-  font-size: 11px;
+  font-size: 11.5px;
   white-space: nowrap;
   flex-shrink: 0;
-  transform: translateX(-5px);
 }
 
 .range-slider-wrapper {
@@ -186,45 +208,65 @@ body {
   transition: transform 0.15s ease;
 }
 
-.filter-slider::-moz-range-thumb:hover {
-  transform: scale(1.15);
-}
-
-/* Кнопка «НАЙТИ» */
-.filter-form button {
+/* Прозрачный фон у кнопки «НАЙТИ», чтобы совпадала со стилем остальных кнопок */
+.filter-form button,
+.filter-form .btn,
+.filter-form .btn-light {
   padding: 5px 8px;
-  background: #ffffff;
-  color: #000000;
-  border: none;
-  border-radius: 0;
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #000000 !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
   cursor: pointer;
   font-family: Arial, sans-serif;
-  font-size: 12px;
+  font-size: clamp(12px, 1.5vw, 15px);
   font-weight: 500;
   letter-spacing: 0.3px;
   transition: color 0.2s ease;
   flex-shrink: 0;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
-.filter-form button:hover {
-  background: #ffffff;
-  color: #4c4c4c;
+.filter-form button:hover,
+.filter-form .btn:hover,
+.filter-form .btn-light:hover {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: #4c4c4c !important;
 }
 
-/* Сетка карточек */
+/* По умолчанию на стандартных экранах — 2 колонки с минимальной шириной карточки */
 .tile-grid {
+  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 8px;
+  grid-template-columns: repeat(2, minmax(var(--card-min-width), 1fr));
+  gap: clamp(10px, 2vw, 18px);
+  padding: clamp(10px, 2vw, 18px);
   align-items: start;
+}
+
+/* Узкие экраны (< 350px): 1 колонка */
+@media (max-width: 349px) {
+  .tile-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Широкие экраны (>= 560px): 3 колонки, карточки расширяются до заполнения ширины */
+@media (min-width: 560px) {
+  .tile-grid {
+    grid-template-columns: repeat(3, minmax(var(--card-min-width), 1fr));
+  }
 }
 
 .card-wrapper {
   position: relative;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  width: 100%;
 }
 
 .card {
@@ -238,6 +280,7 @@ body {
   flex-direction: column;
   transition: border-color 0.2s;
   cursor: pointer;
+  width: 100%;
 }
 
 .card:hover {
@@ -246,27 +289,29 @@ body {
 
 .card-image {
   width: 100%;
-  height: 80px; 
+  aspect-ratio: 4 / 3;
+  height: auto;
+  max-height: clamp(90px, 22dvh, 210px);
   object-fit: cover;
 }
 
 .card-info {
-  padding: 4px 6px;
-  font-size: 10px;
+  padding: clamp(6px, 1.3vw, 12px) clamp(8px, 1.6vw, 14px);
+  font-size: clamp(12px, 1.5vw, 15px);
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 3px;
 }
 
 .card-title {
   font-weight: bold;
-  font-size: 10.5px;
+  font-size: clamp(13px, 1.8vw, 17px);
   margin-bottom: 0;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .card-text-norma {
-  font-size: 9.5px;
+  font-size: clamp(11px, 1.4vw, 14px);
   margin: 0;
   color: var(--hf-muted);
 }
@@ -274,26 +319,26 @@ body {
 .card-like-row {
   display: flex;
   align-items: center;
-  gap: 3px;
-  margin-top: 1px;
+  gap: 5px;
+  margin-top: 3px;
 }
 
 .likes-icon {
   color: var(--hf-accent);
   font-style: normal;
-  font-size: 13px;
+  font-size: clamp(15px, 1.9vw, 19px);
   line-height: 1;
 }
 
 .likes-count-text {
-  font-size: 10px;
+  font-size: clamp(11.5px, 1.45vw, 14px);
   color: #1A1A1A;
 }
 
 .delete-form {
   position: absolute;
-  right: 6px;
-  bottom: 6px;
+  right: 8px;
+  bottom: 8px;
   margin: 0;
   padding: 0;
   z-index: 5;
@@ -307,7 +352,7 @@ body {
   border-radius: 0;
   cursor: pointer;
   font-family: Arial, sans-serif;
-  font-size: 11px;
+  font-size: clamp(11px, 1.3vw, 13.5px);
   font-weight: 500;
   letter-spacing: 0.3px;
   transition: color 0.2s ease;
@@ -317,27 +362,44 @@ body {
   color: #4c4c4c;
 }
 
-/* ==================== ЛЕНТА (FEED) ==================== */
+/* ==================== ЛЕНТА (FEED): ВЕРТИКАЛЬНОЕ ВИДЕО ПО ЦЕНТРУ ==================== */
 .feed-screen {
+  width: 100%;
   height: 100%;
+  flex: 1 1 auto;
   position: relative;
   background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .feed-video {
-  width: 100%;
   height: 100%;
-  object-fit: cover;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 9 / 16;
+  object-fit: contain;
+  background: #000;
 }
 
 .feed-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.85) 100%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.85) 100%);
   color: #fff;
-  padding: 16px 14px;
+  padding: clamp(12px, 2.5vw, 24px);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.feed-overlay button,
+.feed-overlay .feed-like-clean,
+.feed-overlay .feed-more-label {
+  pointer-events: auto;
 }
 
 .feed-top {
@@ -345,17 +407,18 @@ body {
 }
 
 .feed-title {
-  font-size: 16px;
+  font-size: clamp(17px, 2.3vw, 23px);
   margin: 0;
 }
 
 .feed-right {
-  margin-top: 250px;
+  margin-top: auto;
+  margin-bottom: auto;
   align-self: flex-end;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+  align-items: center;
+  gap: clamp(10px, 1.8dvh, 18px);
   flex-shrink: 0;
 }
 
@@ -363,16 +426,18 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: 2px;
   color: #fff;
-  font-size: 15px;
+  font-size: clamp(17px, 2.2vw, 22px);
   font-weight: 600;
   text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-  align-self: flex-end;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 .feed-like-icon {
-  font-size: 32px;
+  font-size: clamp(38px, 5.2vw, 52px);
   line-height: 1;
 }
 
@@ -381,7 +446,7 @@ body {
   border: none;
   padding: 0;
   color: #ffffff;
-  font-size: 22px;
+  font-size: clamp(28px, 3.8vw, 38px);
   font-weight: 700;
   line-height: 1;
   text-decoration: none;
@@ -389,34 +454,29 @@ body {
   transition: transform 0.15s ease, opacity 0.2s ease;
   display: inline-block;
   cursor: pointer;
-  transform: translateX(-2px);
 }
 
 .feed-btn:hover {
-  transform: translateX(1px);
+  transform: translateY(2px);
   opacity: 0.85;
 }
 
-/* Блок описания и параметров */
 .feed-info {
-  margin-top: auto;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-rows: auto auto;
   column-gap: 10px;
   align-items: start;
-  transition: width 0.2s ease;
 }
 
 .feed-desc {
   grid-column: 1;
   grid-row: 1 / span 2;
   margin: 0;
-  font-size: 14px;
+  font-size: clamp(15px, 1.9vw, 18px);
   line-height: 1.45;
-  text-align: left; 
-  hyphens: auto;
+  text-align: left;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
   display: -webkit-box;
@@ -424,14 +484,11 @@ body {
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: clip;
 }
 
 .feed-param-norma {
   grid-column: 2;
   grid-row: 1;
-  margin-top: 2px;
-  font-size: 14px;
   line-height: 1.45;
   text-align: right;
   white-space: nowrap;
@@ -445,8 +502,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 60px;
-  font-size: 14px;
+  gap: 12px;
+  font-size: clamp(15px, 1.9vw, 18px);
   line-height: 1.45;
   white-space: nowrap;
   color: #fff;
@@ -456,15 +513,14 @@ body {
 .feed-more-label {
   cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
+  font-size: clamp(15px, 1.9vw, 18px);
   user-select: none;
-  background: none;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-.feed-more-close { display: none; }
+.feed-more-close {
+  display: none;
+}
 
-/* === Раскрытое состояние (через CSS чекбокс) === */
 .feed-expand-checkbox:checked ~ .feed-info {
   display: block;
 }
@@ -486,64 +542,87 @@ body {
   margin-top: 4px;
 }
 
-.feed-expand-checkbox:checked ~ .feed-info .feed-more-label {
-  display: inline-block;
-  text-align: right;
+.feed-expand-checkbox:checked ~ .feed-info .feed-more-label .feed-more-open {
+  display: none;
 }
 
-.feed-expand-checkbox:checked ~ .feed-info .feed-more-label .feed-more-open { display: none; }
-.feed-expand-checkbox:checked ~ .feed-info .feed-more-label .feed-more-close { display: inline; }
-/* ==================== СТРАНИЦА ДОБАВЛЕНИЯ (ADD) ==================== */
+.feed-expand-checkbox:checked ~ .feed-info .feed-more-label .feed-more-close {
+  display: inline;
+}
+
+/* ==================== ДОБАВЛЕНИЕ ==================== */
 .add-container {
-  padding: 10px 12px 15px 12px;
+  width: 100%;
+  min-height: 100%;
+  flex: 1 1 auto;
+  padding: clamp(10px, 2vw, 20px) clamp(12px, 2.5vw, 28px);
   display: flex;
   flex-direction: column;
 }
 
 .add-title {
-  font-size: 13px;
+  font-size: clamp(16px, 2.2vw, 21px);
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: clamp(8px, 1.4dvh, 14px);
   color: var(--hf-text);
+  flex-shrink: 0;
 }
 
 .add-form {
+  width: 100%;
   display: flex;
   flex-direction: column;
+  gap: clamp(8px, 1.3dvh, 14px);
 }
 
+/* Узкие экраны (< 600px): превью в 1 колонку; широкие (>= 600px): в 2 колонки */
 .media-preview-box {
+  width: 100%;
   background: #fff;
   border: 1px solid var(--hf-border);
-  padding: 6px;
-  margin-bottom: 10px;
+  padding: clamp(6px, 1.2vw, 12px);
   border-radius: 4px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(8px, 1.6vw, 18px);
+}
+
+@media (min-width: 600px) {
+  .media-preview-box {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.media-slot {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  width: 100%;
 }
 
 .media-preview-item {
   width: 100%;
-  height: 90px;
+  height: clamp(120px, 24dvh, 250px);
   object-fit: cover;
   border-radius: 3px;
   background-color: #f0f0f0;
 }
 
 .media-preview-item.video-margin {
-  margin-top: 10px;
+  margin-top: 0;
 }
 
-/* Элементы формы (Инпуты, Текстарии, Лейблы) */
 .form-group {
-  margin-bottom: 5px;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-label {
   display: block;
-  font-size: 9px;
+  font-size: clamp(11px, 1.3vw, 13px);
   color: var(--hf-muted);
-  margin-bottom: 2px;
+  margin-bottom: clamp(3px, 0.5dvh, 5px);
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.3px;
@@ -553,37 +632,36 @@ body {
   width: 100%;
   border: 1px solid #d9d9d9;
   border-radius: 0;
-  font-size: 11px;
+  font-size: clamp(13px, 1.6vw, 16px);
   background: #fff;
   color: var(--hf-text);
   font-family: inherit;
-  box-sizing: border-box;
   outline: none;
 }
 
 .form-input {
-  height: 26px;
-  padding: 2px 8px;
+  height: clamp(30px, 4dvh, 38px);
+  padding: 2px clamp(8px, 1.2vw, 12px);
 }
 
 .form-textarea {
-  min-height: 64px;
-  padding: 4px 8px;
-  resize: none;
+  height: clamp(54px, 8dvh, 88px);
+  min-height: 48px;
+  padding: clamp(5px, 0.8dvh, 8px) clamp(8px, 1.2vw, 12px);
+  resize: vertical;
 }
 
 .input-error {
   border: 2px solid #E2725B !important;
 }
 
-/* Кнопки действий */
 .btn-base {
-  padding: 5px 8px;
+  padding: clamp(6px, 0.9dvh, 10px) clamp(10px, 1.6vw, 16px);
   color: #000000;
   border: none;
   border-radius: 0;
   font-family: Arial, sans-serif;
-  font-size: 12px;
+  font-size: clamp(12.5px, 1.55vw, 15px);
   font-weight: 500;
   letter-spacing: 0.3px;
   text-transform: uppercase;
@@ -594,46 +672,52 @@ body {
   display: block;
   width: 100%;
   text-align: center;
-  background: #ffffff;
-  margin-top: 6px;
+  background: transparent;
+  margin-top: clamp(4px, 0.6dvh, 6px);
+  padding: clamp(4px, 0.6dvh, 7px) 6px;
+  font-size: clamp(11.5px, 1.4vw, 14px);
 }
 
 .btn-action {
   background: transparent;
   align-self: flex-end;
   width: auto;
-  margin-top: 10px;
+  margin-top: clamp(2px, 0.5dvh, 6px);
 }
 
-/* ==================== СТРАНИЦА АВТОРИЗАЦИИ (LOGIN) ==================== */
+/* ==================== СТРАНИЦА ВХОДА ==================== */
 .login-wrapper {
+  width: 100%;
+  height: 100%;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 100px;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 40px);
   background-color: #fff;
-  /* Убрали min-height: 100%, так как блок сам займет всё место благодаря flex: 1 */
 }
 
 .login-title {
-  margin-bottom: 30px;
-  font-size: 16px;
+  margin-bottom: clamp(16px, 3.5dvh, 36px);
+  font-size: clamp(16px, 2.4vw, 24px);
   font-weight: bold;
+  text-align: center;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  width: 80%;
+  gap: clamp(10px, 2dvh, 20px);
+  width: clamp(260px, 65vw, 560px);
 }
 
 .login-input {
-  padding: 10px;
+  padding: clamp(8px, 1.4dvh, 14px) clamp(10px, 1.6vw, 16px);
   border: 1px solid #e8e8e5;
   border-radius: 4px;
   width: 100%;
-  box-sizing: border-box;
+  font-size: clamp(13px, 1.7vw, 17px);
   outline: none;
 }
 
@@ -641,23 +725,32 @@ body {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .password-toggle-btn {
   position: absolute;
-  right: 5px;
+  right: clamp(8px, 1.2vw, 14px);
+  font-size: clamp(11px, 1.4vw, 14px);
 }
 
 .login-btn {
-  padding: 10px;
-  background: #ffffff;
+  padding: clamp(8px, 1.4dvh, 14px);
+  background: transparent;
   color: #000000;
   border: none;
   border-radius: 0;
-  font-size: 16px;
+  font-size: clamp(14px, 1.9vw, 19px);
   font-weight: 500;
   letter-spacing: 0.3px;
   text-transform: uppercase;
-  margin-top: 10px;
+  margin-top: clamp(4px, 1dvh, 12px);
   cursor: pointer;
+  align-self: center;
+  width: auto;
+  min-width: clamp(110px, 22vw, 180px);
+}
+
+.login-btn:hover {
+  color: #4c4c4c;
 }

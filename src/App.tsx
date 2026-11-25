@@ -1,14 +1,16 @@
 import { type FC } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; // ИСПРАВЛЕНО
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppLayout } from './AppLayout';
 import { ProductionTypesCatalogPage } from './pages/ProductionTypesCatalogPage';
 import { ProductionTypesFeedPage } from './pages/ProductionTypesFeedPage';
 import { LoginPage } from './pages/LoginPage.js';
 import { ProductionTypesAddPage } from './pages/ProductionTypesAddPage.js';
 
+const basename = import.meta.env.BASE_URL || '/';
+
 export const App: FC = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Routes>
         <Route element={<AppLayout />}>
           <Route path="/production_types" element={<ProductionTypesCatalogPage />} />
@@ -21,4 +23,5 @@ export const App: FC = () => {
     </BrowserRouter>
   );
 };
+
 export default App;

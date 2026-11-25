@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:pages": "VITE_BASE_PATH=/Types_of_productions_frontend/ npm run build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "predeploy": "npm run build:pages",
+    "deploy": "gh-pages -d bundle -b l7_production_types_bundle",
     "generate-api": "node scripts/generate-api.mjs"
   },
   "dependencies": {

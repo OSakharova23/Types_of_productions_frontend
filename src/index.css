@@ -27,6 +27,7 @@ body {
 .mobile-viewport {
   width: 360px;
   height: 660px;
+  zoom: 1.2;
   background-color: var(--hf-bg);
   position: relative;
   overflow: hidden;

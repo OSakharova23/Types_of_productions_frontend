@@ -4,6 +4,8 @@ import { Button } from 'react-bootstrap';
 interface IFilterProps {
   minRate: number;
   maxRate: number;
+  minBound: number;
+  maxBound: number;
   setMinRate: (val: number) => void;
   setMaxRate: (val: number) => void;
   onSearch: (e: SyntheticEvent) => void;
@@ -12,10 +14,20 @@ interface IFilterProps {
 export const ProductionTypesFilter: FC<IFilterProps> = ({
   minRate,
   maxRate,
+  minBound,
+  maxBound,
   setMinRate,
   setMaxRate,
   onSearch,
 }) => {
+  const handleMinChange = (val: number) => {
+    setMinRate(Math.min(val, maxRate));
+  };
+
+  const handleMaxChange = (val: number) => {
+    setMaxRate(Math.max(val, minRate));
+  };
+
   return (
     <form onSubmit={onSearch} className="filter-form">
       <div className="filter-slider-box">
@@ -30,25 +42,27 @@ export const ProductionTypesFilter: FC<IFilterProps> = ({
           <div className="range-slider-track"></div>
           <input
             type="range"
-            min="0"
-            max="200"
+            min={minBound}
+            max={maxBound}
             value={minRate}
-            onChange={(e) => setMinRate(Number(e.target.value))}
+            disabled={minBound === maxBound}
+            onChange={(e) => handleMinChange(Number(e.target.value))}
             className="filter-slider"
           />
           <input
             type="range"
-            min="0"
-            max="200"
+            min={minBound}
+            max={maxBound}
             value={maxRate}
-            onChange={(e) => setMaxRate(Number(e.target.value))}
+            disabled={minBound === maxBound}
+            onChange={(e) => handleMaxChange(Number(e.target.value))}
             className="filter-slider"
           />
         </div>
       </div>
-      <Button 
-        variant="light" 
-        type="submit" 
+      <Button
+        variant="light"
+        type="submit"
         style={{ marginTop: '14px', borderRadius: '0', fontSize: '12px', fontWeight: 500 }}
       >
         НАЙТИ

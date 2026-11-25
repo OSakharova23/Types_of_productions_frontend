@@ -1,22 +1,25 @@
 import { type FC, type SubmitEvent, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../store';
-import { setFilters, fetchProductionTypes } from '../store/slices/productionTypesSlice';
+import { setFilters, applyFilterFlag, fetchProductionTypes } from '../store/slices/productionTypesSlice';
 import { ProductionTypesCard } from '../components/ProductionTypesCard';
 import { ProductionTypesFilter } from '../components/ProductionTypesFilter';
 import { Spinner } from 'react-bootstrap';
 
 export const ProductionTypesCatalogPage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { minRate, maxRate, items, loading } = useSelector((state: RootState) => state.productionTypes);
+  const { minRate, maxRate, minBound, maxBound, items, loading } = useSelector(
+    (state: RootState) => state.productionTypes
+  );
 
   useEffect(() => {
-    dispatch(fetchProductionTypes());
+    dispatch(fetchProductionTypes(undefined));
   }, [dispatch]);
 
   const handleSearch = (e: SubmitEvent) => {
     e.preventDefault();
-    dispatch(fetchProductionTypes());
+    dispatch(applyFilterFlag());
+    dispatch(fetchProductionTypes({ min_rate: minRate, max_rate: maxRate }));
   };
 
   return (
@@ -24,13 +27,17 @@ export const ProductionTypesCatalogPage: FC = () => {
       <ProductionTypesFilter
         minRate={minRate}
         maxRate={maxRate}
+        minBound={minBound}
+        maxBound={maxBound}
         setMinRate={(val) => dispatch(setFilters({ minRate: val, maxRate }))}
         setMaxRate={(val) => dispatch(setFilters({ minRate, maxRate: val }))}
         onSearch={handleSearch as any}
       />
-      
+
       {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}><Spinner animation="border" /></div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <Spinner animation="border" />
+        </div>
       ) : (
         <div className="tile-grid">
           {items.map((item: any) => (

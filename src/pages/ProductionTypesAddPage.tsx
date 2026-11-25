@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState, AppDispatch } from '../store';
 import { api } from '../api';
-import { fetchProductionTypes } from '../store/slices/productionTypesSlice';
+import { fetchProductionTypes, resetFilters } from '../store/slices/productionTypesSlice';
 
 export const ProductionTypesAddPage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -128,7 +128,8 @@ export const ProductionTypesAddPage: FC = () => {
         if (videoFile) payload.video = videoFile;
 
         await api.api.productionTypesControllerPublishService(draftId, payload);
-        dispatch(fetchProductionTypes());
+        dispatch(resetFilters());
+        dispatch(fetchProductionTypes(undefined));
         navigate('/production_types');
       } catch (error) {
         console.error(error);

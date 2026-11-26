@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../../api';
+import { api, isMockMode } from '../../api';
 import { PRODUCTION_TYPES_MOCK, type IProductionType } from '../../modules/production_types_mock';
 
 const calcRateBounds = (list: IProductionType[]) => {
@@ -22,6 +22,18 @@ interface IFilterParams {
   max_rate?: number;
 }
 
+const getFilteredMockList = (minRate: number, maxRate: number, useFilter: boolean) => {
+  const publishedMock = PRODUCTION_TYPES_MOCK.filter((item) => item.status === 'published').map(
+    (item) => ({ ...item })
+  );
+  if (!useFilter) return publishedMock;
+
+  return publishedMock.filter((item) => {
+    const rate = item.production_output_rate ?? 0;
+    return rate >= minRate && rate <= maxRate;
+  });
+};
+
 export const fetchProductionTypes = createAsyncThunk(
   'productionTypes/fetchList',
   async (params: IFilterParams | undefined, { getState, rejectWithValue }) => {
@@ -35,11 +47,25 @@ export const fetchProductionTypes = createAsyncThunk(
       query.max_rate = params?.max_rate ?? productionTypes.maxRate;
     }
 
+    if (isMockMode) {
+      const publishedMock = PRODUCTION_TYPES_MOCK.filter((item) => item.status === 'published');
+      const bounds = calcRateBounds(publishedMock);
+      const effectiveMin = useFilter ? (params?.min_rate ?? productionTypes.minRate) : bounds.minBound;
+      const effectiveMax = useFilter ? (params?.max_rate ?? productionTypes.maxRate) : bounds.maxBound;
+
+      return {
+        data: getFilteredMockList(effectiveMin, effectiveMax, useFilter),
+        isFiltered: useFilter,
+        fromMock: true,
+      };
+    }
+
     try {
       const response = await api.api.productionTypesControllerGetList(query);
       return {
         data: response.data as IProductionType[],
         isFiltered: useFilter,
+        fromMock: false,
       };
     } catch {
       return rejectWithValue({ isFiltered: useFilter });
@@ -50,7 +76,9 @@ export const fetchProductionTypes = createAsyncThunk(
 export const toggleLikeThunk = createAsyncThunk(
   'productionTypes/toggleLike',
   async ({ id, action }: { id: number; action: number }) => {
-    await api.api.productionTypesControllerHandleLike(id, { action });
+    if (!isMockMode) {
+      await api.api.productionTypesControllerHandleLike(id, { action });
+    }
     return { id, action };
   }
 );
@@ -58,7 +86,9 @@ export const toggleLikeThunk = createAsyncThunk(
 export const deleteProductionThunk = createAsyncThunk(
   'productionTypes/delete',
   async (id: number) => {
-    await api.api.productionTypesControllerDeleteService(id);
+    if (!isMockMode) {
+      await api.api.productionTypesControllerDeleteService(id);
+    }
     return id;
   }
 );
@@ -102,6 +132,18 @@ const productionTypesSlice = createSlice({
         const list = action.payload.data || [];
         state.items = list;
 
+        if (action.payload.fromMock) {
+          const publishedMock = PRODUCTION_TYPES_MOCK.filter((item) => item.status === 'published');
+          const { minBound, maxBound } = calcRateBounds(publishedMock);
+          state.minBound = minBound;
+          state.maxBound = maxBound;
+          if (!action.payload.isFiltered) {
+            state.minRate = minBound;
+            state.maxRate = maxBound;
+          }
+          return;
+        }
+
         if (!action.payload.isFiltered) {
           const { minBound, maxBound } = calcRateBounds(list);
           state.minBound = minBound;
@@ -109,7 +151,6 @@ const productionTypesSlice = createSlice({
           state.minRate = minBound;
           state.maxRate = maxBound;
         } else {
-          // Если добавили карточку за пределами текущих границ, расширяем границы
           const { minBound, maxBound } = calcRateBounds(list);
           if (list.length > 0) {
             state.minBound = Math.min(state.minBound, minBound);

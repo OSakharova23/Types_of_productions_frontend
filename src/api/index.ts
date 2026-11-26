@@ -1,15 +1,29 @@
 import { Api } from './Api';
 import axios from 'axios';
 
-// Настройка axios для передачи куки
 axios.defaults.withCredentials = true;
 
-// Сгенерированный API для 7 методов production_types
+export const isMockMode =
+  import.meta.env.VITE_USE_MOCK === 'true' ||
+  (typeof window !== 'undefined' && window.location.hostname.endsWith('github.io'));
+
 export const api = new Api({
-  baseURL: 'http://localhost:5173',
+  baseURL: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173',
 });
 api.instance.defaults.withCredentials = true;
 
-// Ручные методы для пользователей
-export const loginManual = async (credentials: any) => axios.post('/api/users/login', credentials);
-export const logoutManual = async () => axios.post('/api/users/logout');
+export const loginManual = async (credentials: { username: string; password: string }) => {
+  if (isMockMode) {
+    return Promise.resolve({
+      data: { ok: true, user: { username: credentials.username, mode: 'mock' } },
+    });
+  }
+  return axios.post('/api/users/login', credentials);
+};
+
+export const logoutManual = async () => {
+  if (isMockMode) {
+    return Promise.resolve({ data: { ok: true } });
+  }
+  return axios.post('/api/users/logout');
+};

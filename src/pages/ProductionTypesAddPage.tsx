@@ -2,8 +2,9 @@ import { useState, useEffect, type FC } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import type { RootState, AppDispatch } from '../store';
-import { api } from '../api';
+import { api, isMockMode } from '../api';
 import { fetchProductionTypes, resetFilters } from '../store/slices/productionTypesSlice';
+import { DEFAULT_IMAGE_URL, DEFAULT_VIDEO_URL, getAssetUrl } from '../utils/assets';
 
 export const ProductionTypesAddPage: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,35 +18,37 @@ export const ProductionTypesAddPage: FC = () => {
     craft_title: '',
     description: '',
     production_output_rate: '',
-    defect_waste_quantity: ''
+    defect_waste_quantity: '',
   });
 
   const [errors, setErrors] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('/img/default-image.jpg');
-  const [videoPreview, setVideoPreview] = useState<string>('/img/default-video.mp4');
+  const [imagePreview, setImagePreview] = useState<string>(DEFAULT_IMAGE_URL);
+  const [videoPreview, setVideoPreview] = useState<string>(DEFAULT_VIDEO_URL);
 
   useEffect(() => {
     const checkDraft = async () => {
-      if (isAuth === 1) {
+      if (isAuth === 1 && !isMockMode) {
         try {
           const res = await api.api.productionTypesControllerGetDraft();
-          const draft: any = res.data; 
-          
+          const draft: any = res.data;
+
           if (draft) {
             setDraftId(draft.production_id);
             setFormData({
               craft_title: draft.craft_title || '',
               description: draft.description || '',
-              production_output_rate: draft.production_output_rate !== null ? String(draft.production_output_rate) : '',
-              defect_waste_quantity: draft.defect_waste_quantity !== null ? String(draft.defect_waste_quantity) : ''
+              production_output_rate:
+                draft.production_output_rate !== null ? String(draft.production_output_rate) : '',
+              defect_waste_quantity:
+                draft.defect_waste_quantity !== null ? String(draft.defect_waste_quantity) : '',
             });
-            if (draft.image_url) setImagePreview(draft.image_url);
-            if (draft.video_url) setVideoPreview(draft.video_url);
+            if (draft.image_url) setImagePreview(getAssetUrl(draft.image_url));
+            if (draft.video_url) setVideoPreview(getAssetUrl(draft.video_url));
             setStep(2);
           }
-        } catch (error) {}
+        } catch {}
       }
     };
     checkDraft();
@@ -53,8 +56,8 @@ export const ProductionTypesAddPage: FC = () => {
 
   useEffect(() => {
     return () => {
-      if (imagePreview !== '/img/default-image.jpg') URL.revokeObjectURL(imagePreview);
-      if (videoPreview !== '/img/default-video.mp4') URL.revokeObjectURL(videoPreview);
+      if (imagePreview.startsWith('blob:')) URL.revokeObjectURL(imagePreview);
+      if (videoPreview.startsWith('blob:')) URL.revokeObjectURL(videoPreview);
     };
   }, [imagePreview, videoPreview]);
 
@@ -66,7 +69,7 @@ export const ProductionTypesAddPage: FC = () => {
     if (file) {
       setImagePreview(URL.createObjectURL(file));
     } else {
-      setImagePreview('/img/default-image.jpg');
+      setImagePreview(DEFAULT_IMAGE_URL);
     }
   };
 
@@ -76,7 +79,7 @@ export const ProductionTypesAddPage: FC = () => {
     if (file) {
       setVideoPreview(URL.createObjectURL(file));
     } else {
-      setVideoPreview('/img/default-video.mp4');
+      setVideoPreview(DEFAULT_VIDEO_URL);
     }
   };
 
@@ -88,6 +91,12 @@ export const ProductionTypesAddPage: FC = () => {
     }
     setErrors([]);
 
+    if (isMockMode) {
+      setDraftId(Date.now());
+      setStep(2);
+      return;
+    }
+
     try {
       const payload: any = { craft_title: formData.craft_title };
       if (imageFile) payload.image = imageFile;
@@ -98,7 +107,7 @@ export const ProductionTypesAddPage: FC = () => {
       setStep(2);
     } catch (e: any) {
       console.error(e);
-      alert("Ошибка создания черновика. Убедитесь, что у вас нет незавершенных черновиков.");
+      alert('Ошибка создания черновика. Убедитесь, что у вас нет незавершенных черновиков.');
     }
   };
 
@@ -115,6 +124,13 @@ export const ProductionTypesAddPage: FC = () => {
       return;
     }
     setErrors([]);
+
+    if (isMockMode) {
+      dispatch(resetFilters());
+      dispatch(fetchProductionTypes(undefined));
+      navigate('/production_types');
+      return;
+    }
 
     if (draftId) {
       try {
@@ -133,12 +149,12 @@ export const ProductionTypesAddPage: FC = () => {
         navigate('/production_types');
       } catch (error) {
         console.error(error);
-        alert("Ошибка при публикации.");
+        alert('Ошибка при публикации.');
       }
     }
   };
 
-  const hasError = (field: string) => errors.includes(field) ? 'input-error' : '';
+  const hasError = (field: string) => (errors.includes(field) ? 'input-error' : '');
 
   return (
     <div className="content-area content-area--scroll">
@@ -148,29 +164,33 @@ export const ProductionTypesAddPage: FC = () => {
         <form className="add-form" onSubmit={step === 1 ? handleNext : handlePublish}>
           <div className="media-preview-box">
             <div className="media-slot">
-              <img 
-                src={imagePreview} 
-                alt="Превью" 
+              <img
+                src={imagePreview}
+                alt="Превью"
                 className="media-preview-item"
-                onError={(e) => { e.currentTarget.src = '/img/default-image.jpg'; }}
+                onError={(e) => {
+                  e.currentTarget.src = DEFAULT_IMAGE_URL;
+                }}
               />
-              <input 
-                id="image-upload" type="file" accept="image/*" onChange={handleImageChange} hidden 
-              />
-              <label htmlFor="image-upload" className="btn-base btn-file">ВЫБРАТЬ ИЗОБРАЖЕНИЕ</label>
+              <input id="image-upload" type="file" accept="image/*" onChange={handleImageChange} hidden />
+              <label htmlFor="image-upload" className="btn-base btn-file">
+                ВЫБРАТЬ ИЗОБРАЖЕНИЕ
+              </label>
             </div>
 
             <div className="media-slot">
-              <video 
-                src={videoPreview} 
-                controls 
+              <video
+                src={videoPreview}
+                controls
                 className="media-preview-item video-margin"
-                onError={(e) => { e.currentTarget.src = '/img/default-video.mp4'; }}
+                onError={(e) => {
+                  e.currentTarget.src = DEFAULT_VIDEO_URL;
+                }}
               ></video>
-              <input 
-                id="video-upload" type="file" accept="video/*" onChange={handleVideoChange} hidden 
-              />
-              <label htmlFor="video-upload" className="btn-base btn-file">ВЫБРАТЬ ВИДЕО</label>
+              <input id="video-upload" type="file" accept="video/*" onChange={handleVideoChange} hidden />
+              <label htmlFor="video-upload" className="btn-base btn-file">
+                ВЫБРАТЬ ВИДЕО
+              </label>
             </div>
           </div>
 
@@ -180,7 +200,7 @@ export const ProductionTypesAddPage: FC = () => {
               type="text"
               name="craft_title"
               value={formData.craft_title}
-              onChange={e => setFormData({ ...formData, craft_title: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, craft_title: e.target.value })}
               placeholder="Например: Деревообработка"
               className={`form-input ${hasError('craft_title')}`}
             />
@@ -193,7 +213,7 @@ export const ProductionTypesAddPage: FC = () => {
                 <textarea
                   name="description"
                   value={formData.description}
-                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className={`form-textarea ${hasError('description')}`}
                 />
               </div>
@@ -204,7 +224,9 @@ export const ProductionTypesAddPage: FC = () => {
                   type="number"
                   name="production_output_rate"
                   value={formData.production_output_rate}
-                  onChange={e => setFormData({ ...formData, production_output_rate: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, production_output_rate: e.target.value })
+                  }
                   className={`form-input ${hasError('production_output_rate')}`}
                 />
               </div>
@@ -215,7 +237,9 @@ export const ProductionTypesAddPage: FC = () => {
                   type="number"
                   name="defect_waste_quantity"
                   value={formData.defect_waste_quantity}
-                  onChange={e => setFormData({ ...formData, defect_waste_quantity: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, defect_waste_quantity: e.target.value })
+                  }
                   className={`form-input ${hasError('defect_waste_quantity')}`}
                 />
               </div>
